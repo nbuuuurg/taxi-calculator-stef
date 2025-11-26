@@ -5,9 +5,23 @@ interface ReservationModalProps {
   isOpen: boolean;
   onClose: () => void;
   price: number;
+  origin: string;
+  destination: string;
+  distance: number;
+  date: Date;
+  isRoundTrip: boolean;
 }
 
-const ReservationModal: React.FC<ReservationModalProps> = ({ isOpen, onClose, price }) => {
+const ReservationModal: React.FC<ReservationModalProps> = ({ 
+  isOpen, 
+  onClose, 
+  price, 
+  origin, 
+  destination, 
+  distance,
+  date,
+  isRoundTrip 
+}) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   
@@ -25,13 +39,24 @@ const ReservationModal: React.FC<ReservationModalProps> = ({ isOpen, onClose, pr
     e.preventDefault();
     setIsSubmitting(true);
 
+    const payload = {
+      ...formData,
+      depart: origin,
+      arrivee: destination,
+      date: date.toLocaleString('fr-FR'), // Date formatée
+      distance: distance.toFixed(2),
+      tarif: price.toFixed(2),
+      "aller-simple": !isRoundTrip,
+      "aller-retour": isRoundTrip
+    };
+
     try {
       const response = await fetch('https://n8n.srv1150184.hstgr.cloud/webhook-test/522d22b9-2b89-4d10-b570-68783d532290', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
       if (response.ok) {
@@ -89,9 +114,14 @@ const ReservationModal: React.FC<ReservationModalProps> = ({ isOpen, onClose, pr
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="bg-amber-50 border border-amber-100 p-3 rounded-lg text-sm text-amber-900 mb-4 flex justify-between items-center">
-                <span>Montant estimé :</span>
-                <span className="font-bold text-lg">{price.toFixed(2)} €</span>
+              <div className="bg-amber-50 border border-amber-100 p-3 rounded-lg text-sm text-amber-900 mb-4">
+                <div className="flex justify-between items-center mb-1">
+                   <span>Montant estimé :</span>
+                   <span className="font-bold text-lg">{price.toFixed(2)} €</span>
+                </div>
+                <div className="text-xs opacity-80 border-t border-amber-200 pt-1 mt-1">
+                   {origin} ➔ {destination}
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">

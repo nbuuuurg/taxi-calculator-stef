@@ -5,12 +5,14 @@ import { TarifType } from '../types';
 import ReservationModal from './ReservationModal';
 
 interface PriceEstimatorProps {
+  origin: string;
+  destination: string;
   distanceKm: number;
   date: Date;
   isRoundTrip: boolean;
 }
 
-const PriceEstimator: React.FC<PriceEstimatorProps> = ({ distanceKm, date, isRoundTrip }) => {
+const PriceEstimator: React.FC<PriceEstimatorProps> = ({ origin, destination, distanceKm, date, isRoundTrip }) => {
   const [showModal, setShowModal] = useState(false);
   const estimate = calculateFare(distanceKm, date, isRoundTrip);
 
@@ -76,6 +78,11 @@ const PriceEstimator: React.FC<PriceEstimatorProps> = ({ distanceKm, date, isRou
         isOpen={showModal} 
         onClose={() => setShowModal(false)}
         price={estimate.total}
+        origin={origin}
+        destination={destination}
+        distance={estimate.distanceKm}
+        date={date}
+        isRoundTrip={isRoundTrip}
       />
     </>
   );

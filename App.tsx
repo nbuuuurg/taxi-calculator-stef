@@ -102,6 +102,8 @@ const App: React.FC = () => {
             <div className="flex-1">
                {activeDistance > 0 ? (
                  <PriceEstimator 
+                    origin={origin}
+                    destination={destination}
                     distanceKm={activeDistance}
                     date={date}
                     isRoundTrip={isRoundTrip}

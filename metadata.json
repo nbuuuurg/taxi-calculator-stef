@@ -1,0 +1,5 @@
+{
+  "name": "Taxi Resa France",
+  "description": "Application de réservation de taxi et d'estimation tarifaire conforme à la réglementation française.",
+  "requestFramePermissions": []
+}

@@ -21,15 +21,31 @@ const ReservationModal: React.FC<ReservationModalProps> = ({ isOpen, onClose, pr
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulation d'un envoi API
-    setTimeout(() => {
+    try {
+      const response = await fetch('https://n8n.srv1150184.hstgr.cloud/webhook-test/c274842a-4da4-40c1-9d0d-7b985038129b', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        setIsSuccess(true);
+      } else {
+        console.error("Erreur lors de l'envoi du formulaire", response.statusText);
+        alert("Une erreur est survenue lors de l'envoi de votre demande. Veuillez réessayer.");
+      }
+    } catch (error) {
+      console.error("Erreur réseau", error);
+      alert("Une erreur de connexion est survenue. Vérifiez votre connexion internet.");
+    } finally {
       setIsSubmitting(false);
-      setIsSuccess(true);
-    }, 1500);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

@@ -35,13 +35,13 @@ export const BASE_FARE = 2.60;
 export const TARIFS: Record<TarifType, PricingRule> = {
   [TarifType.A]: {
     name: 'Tarif A',
-    pricePerKm: 1.00,
+    pricePerKm: 2.00,
     description: 'Jour, Aller/Retour (Lun-Sam)',
     applicableCondition: '08h-19h, Lun-Sam, Course avec retour',
   },
   [TarifType.B]: {
     name: 'Tarif B',
-    pricePerKm: 1.50,
+    pricePerKm: 3.00,
     description: 'Nuit/Dimanche, Aller/Retour',
     applicableCondition: '19h-08h ou Dimanche, Course avec retour',
   },

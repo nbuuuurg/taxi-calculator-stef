@@ -43,30 +43,17 @@ const ReservationModal: React.FC<ReservationModalProps> = ({
       ...formData,
       depart: origin,
       arrivee: destination,
-      date: date.toLocaleString('fr-FR'), // Date formatée
+      date: date.toLocaleString('fr-FR'),
       distance: distance.toFixed(2),
       tarif: price.toFixed(2),
       "aller-simple": !isRoundTrip,
-      "aller-retour": isRoundTrip
+      "aller-retour": isRoundTrip,
     };
 
-    // Access environment variable safely
-    // Note: In Vite, variables must be prefixed with VITE_ to be exposed to the client
-    const webhookUrl = (import.meta as any).env.VITE_N8N_WEBHOOK_URL;
-
-    if (!webhookUrl) {
-      console.error("Configuration Error: VITE_N8N_WEBHOOK_URL is missing.");
-      alert("Erreur de configuration du serveur. Veuillez contacter l'administrateur.");
-      setIsSubmitting(false);
-      return;
-    }
-
     try {
-      const response = await fetch(webhookUrl, {
+      const response = await fetch('/api/reservation', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
 

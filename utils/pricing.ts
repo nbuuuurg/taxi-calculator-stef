@@ -41,7 +41,6 @@ export const calculateFare = (
     // On multiplie le total par 2
     total *= 2;
     // On ajuste les composants pour que l'addition reste cohérente (Base + Distance = Total)
-    finalBaseFare *= 2;
     distanceFare *= 2;
   }
 

@@ -39,7 +39,7 @@ export const calculateFare = (
   if (isRoundTrip) {
     // "le prix affiché soit multiplié par deux"
     // On multiplie le total par 2
-    total = 2 * total - 2.60;
+    total = 2 * total - finalBaseFare;
     // On ajuste les composants pour que l'addition reste cohérente (Base + Distance = Total)
     distanceFare *= 2;
   }

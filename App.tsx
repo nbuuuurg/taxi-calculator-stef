@@ -60,8 +60,8 @@ const App: React.FC = () => {
 
           {/* Desktop Navigation (Right Side) */}
           <div className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
-            <a href="https://www.letaxidestef.fr/" className="hover:text-amber-500 transition-colors">Services</a>
-            <a href="https://www.letaxidestef.fr/" className="hover:text-amber-500 transition-colors">Entreprises</a>
+            <a href="https://allotaxietampes.fr/" className="hover:text-amber-500 transition-colors">Services</a>
+            <a href="https://allotaxietampes.fr/" className="hover:text-amber-500 transition-colors">Entreprises</a>
             <button className="flex items-center gap-2 bg-slate-900 text-white px-4 py-2 rounded-full hover:bg-slate-800 transition-colors">
               <Phone size={16} />
               <span>07 49 06 86 65</span>

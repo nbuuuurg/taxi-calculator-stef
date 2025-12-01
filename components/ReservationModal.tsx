@@ -60,8 +60,22 @@ const ReservationModal: React.FC<ReservationModalProps> = ({
       if (response.ok) {
         setIsSuccess(true);
       } else {
-        console.error("Erreur lors de l'envoi du formulaire", response.statusText);
-        alert("Une erreur est survenue lors de l'envoi de votre demande. Veuillez réessayer.");
+        // Tentative d'extraction du message d'erreur pour aider l'utilisateur
+        let errorMessage = "Une erreur est survenue lors de l'envoi.";
+        try {
+          const errorData = await response.json();
+          console.error("API Error Details:", errorData);
+          
+          if (errorData.details && errorData.details.message) {
+             errorMessage += `\nDétail: ${errorData.details.message}`;
+          } else if (response.status === 404) {
+             errorMessage += "\nLe service de réservation (webhook) est inaccessible ou inactif.";
+          }
+        } catch (e) {
+          console.error("Impossible de lire l'erreur JSON", e);
+        }
+        
+        alert(errorMessage);
       }
     } catch (error) {
       console.error("Erreur réseau", error);

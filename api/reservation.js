@@ -1,64 +1,73 @@
 // api/reservation.js
 export default async function handler(req, res) {
-  // 1. Gestion des CORS (Indispensable pour éviter certaines erreurs 500/Network coté client)
+  // 1. Headers CORS
   res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*'); // Pour la prod, remplacez '*' par votre domaine si possible
+  res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
   res.setHeader(
     'Access-Control-Allow-Headers',
     'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
   );
 
-  // 2. Répondre OK immédiatement aux requêtes "preflight" (OPTIONS)
+  // 2. Preflight request handling
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
 
-  // 3. Vérifier la méthode
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // 4. Accès sécurisé à la variable d'environnement
-  const webhookUrl = process.env.N8N_WEBHOOK_URL;
-  
-  // Debug (visible dans les logs Vercel "Functions")
-  if (!webhookUrl) {
-    console.error("ERREUR CRITIQUE : La variable d'environnement N8N_WEBHOOK_URL est indéfinie.");
-    return res.status(500).json({ 
-      error: 'Configuration serveur manquante', 
-      details: 'La clé API vers le webhook est introuvable sur le serveur.' 
-    });
+  // 3. Parsing défensif du body (Vercel le passe parfois en string)
+  let payload = req.body;
+  if (typeof payload === 'string') {
+    try {
+      payload = JSON.parse(payload);
+    } catch (e) {
+      console.error("Erreur parsing JSON body:", e);
+      return res.status(400).json({ error: 'Invalid JSON body' });
+    }
   }
 
+  // 4. URL Webhook (Variable d'env OU Fallback en dur pour la démo/test)
+  // Note: Les URLs "webhook-test" de N8N nécessitent que l'éditeur soit OUVERT. 
+  // Pour la production, utilisez l'URL de production sans "-test".
+  const webhookUrl = process.env.N8N_WEBHOOK_URL || 'https://n8n.srv1150184.hstgr.cloud/webhook-test/c274842a-4da4-40c1-9d0d-7b985038129b';
+
   try {
-    // 5. Envoi vers N8N
     const response = await fetch(webhookUrl, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(req.body),
+      headers: { 
+        'Content-Type': 'application/json',
+        'User-Agent': 'TaxiResaApp/1.0' // Bonne pratique pour éviter certains blocages
+      },
+      body: JSON.stringify(payload),
     });
 
-    // Lecture de la réponse N8N (texte ou json)
+    // Tentative de parsing de la réponse N8N
     const textRes = await response.text();
-    let jsonRes = {};
-    try { jsonRes = JSON.parse(textRes); } catch (e) { jsonRes = { raw: textRes }; }
+    let jsonRes;
+    try { 
+      jsonRes = JSON.parse(textRes); 
+    } catch { 
+      jsonRes = { message: textRes }; 
+    }
 
+    // Si N8N renvoie une erreur (404, 500...), on renvoie ce code précis au front
     if (!response.ok) {
-      console.error('Erreur retournée par N8N :', response.status, textRes);
-      return res.status(502).json({ 
-        error: 'Erreur du service tiers (N8N)', 
-        status: response.status,
+      console.error(`Erreur N8N (${response.status}):`, textRes);
+      return res.status(response.status).json({ 
+        error: 'Erreur N8N', 
         details: jsonRes 
       });
     }
 
-    return res.status(200).json({ success: true, n8n_response: jsonRes });
+    return res.status(200).json({ success: true, data: jsonRes });
 
   } catch (err) {
-    console.error('Exception serveur :', err);
+    console.error('Erreur interne fetch:', err);
     return res.status(500).json({ 
-      error: 'Erreur interne du serveur', 
+      error: 'Erreur interne serveur', 
       message: err.message 
     });
   }

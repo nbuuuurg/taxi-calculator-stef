@@ -46,7 +46,7 @@ const App: React.FC = () => {
               
               {!logoError ? (
                 <img 
-                  src="/logo.png" 
+                  src="/assets/logo.png" 
                   alt="Le Taxi de Stef" 
                   className="h-12 w-auto object-contain cursor-pointer"
                   onClick={goHome}

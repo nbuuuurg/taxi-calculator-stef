@@ -29,10 +29,7 @@ export default async function handler(req, res) {
     }
   }
 
-  // 4. URL Webhook (Variable d'env OU Fallback en dur pour la démo/test)
-  // Note: Les URLs "webhook-test" de N8N nécessitent que l'éditeur soit OUVERT. 
-  // Pour la production, utilisez l'URL de production sans "-test".
-  const webhookUrl = process.env.N8N_WEBHOOK_URL || 'https://n8n.srv1150184.hstgr.cloud/webhook-test/c274842a-4da4-40c1-9d0d-7b985038129b';
+  const webhookUrl = process.env.N8N_WEBHOOK_URL;
 
   try {
     const response = await fetch(webhookUrl, {
